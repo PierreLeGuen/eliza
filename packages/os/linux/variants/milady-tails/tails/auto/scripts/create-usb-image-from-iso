@@ -454,6 +454,7 @@ def unmount(path: Path):
 
     # A lazy fallback is better than leaving a chroot mount behind if syslinux
     # returned before procfs users fully settled.
+    logger.warning("Falling back to lazy unmount for %s", path)
     execute(["umount", "--lazy", str(path)])
 
 

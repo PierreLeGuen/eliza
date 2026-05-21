@@ -84,6 +84,7 @@
 
   --color-brand-orange: var(--accent);
   --color-brand-blue: var(--status-info);
+  --color-brand-blue-soft: var(--brand-blue-soft);
   --color-brand-bg: var(--bg);
   --color-brand-surface: var(--surface);
   --color-brand-border: var(--border);

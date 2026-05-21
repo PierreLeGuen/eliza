@@ -7,6 +7,9 @@ session_flag="${runtime_dir}/elizaos-persistence-setup"
 maintenance_helper=/usr/local/lib/elizaos/persistence-maintenance
 
 start_elizaos_units() {
+    # Defense-in-depth: even if `sudo leave` already restarted these units via
+    # the maintenance helper, retry from the user session in case the sudo
+    # call was rejected or the helper crashed mid-restart.
     systemctl --user reset-failed \
         elizaos-agent.service \
         elizaos-renderer.service \
@@ -25,9 +28,12 @@ cleanup() {
 mkdir -p -- "${runtime_dir}"
 printf 'persistent-storage\n' > "${session_flag}"
 chmod 0644 "${session_flag}"
-sudo "${maintenance_helper}" enter >/dev/null 2>&1 || true
+sudo "${maintenance_helper}" enter >/dev/null 2>&1
 trap cleanup EXIT
-trap 'exit 130' INT
-trap 'exit 143' TERM
 
-/usr/local/bin/tails-persistent-storage "$@"
+/usr/local/bin/tails-persistent-storage "$@" &
+wizard_pid=$!
+trap 'kill -TERM "${wizard_pid}" 2>/dev/null || true' INT TERM
+wait "${wizard_pid}"
+rc=$?
+exit "${rc}"

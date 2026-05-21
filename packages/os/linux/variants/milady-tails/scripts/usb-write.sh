@@ -88,6 +88,8 @@ fi
 image_is_iso=0
 if printf '%s' "${file_out}" | grep -qi "ISO 9660"; then
     image_is_iso=1
+    yellow "WARNING: writing an ISO directly is for explicit override/testing only."
+    yellow "Persistent Storage may reject devices that were not created from the USB image."
 fi
 
 if [ "${image_is_iso}" = "1" ]; then

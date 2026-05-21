@@ -185,7 +185,8 @@
               "required": ["downloadUrl"],
               "properties": {
                 "downloadUrl": { "type": "string", "minLength": 1 }
-              }
+              },
+              "required": ["downloadUrl"]
             }
           }
         ]

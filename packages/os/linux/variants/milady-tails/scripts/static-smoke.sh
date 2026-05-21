@@ -277,9 +277,9 @@ grep -q 'bg-\[#F7F9FF\]' \
     "${REPO_ROOT}/packages/ui/src/components/shell/StartupFailureView.tsx"
 grep -q 'text-\[#0B35F1\]' \
     "${REPO_ROOT}/packages/ui/src/components/shell/StartupFailureView.tsx"
-grep -q 'bg-\[#F7F9FF\]' \
+grep -q 'bg-brand-blue-soft' \
     "${REPO_ROOT}/packages/ui/src/components/onboarding/VoicePrefixGate.tsx"
-grep -q 'bg-\[#0B35F1\]' \
+grep -q 'bg-brand-blue' \
     "${REPO_ROOT}/packages/ui/src/components/onboarding/VoicePrefixSteps.tsx"
 if rg -n 'bg-bg|bg-card|text-accent|bg-accent|text-warn|text-ok|text-danger|#FF5800|#ff5800|#ffe600|#f0b90b' \
     "${REPO_ROOT}/packages/ui/src/components/onboarding/VoicePrefixGate.tsx" \

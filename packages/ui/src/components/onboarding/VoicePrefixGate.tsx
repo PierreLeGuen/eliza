@@ -694,7 +694,7 @@ export function VoicePrefixGate({
   return (
     <div
       data-testid="voice-prefix-gate"
-      className="relative flex h-full max-h-full min-h-0 w-full items-start justify-center overflow-hidden bg-[#F7F9FF] px-3 text-[#0B35F1]"
+      className="relative flex h-full max-h-full min-h-0 w-full items-start justify-center overflow-hidden bg-brand-blue-soft px-3 text-brand-blue"
       style={{
         display: "flex",
         alignItems: "flex-start",
@@ -703,7 +703,7 @@ export function VoicePrefixGate({
         height: "100%",
         paddingTop: "max(0.75rem, var(--safe-area-top, 0px))",
         paddingBottom: "max(0.75rem, var(--safe-area-bottom, 0px))",
-        background: "#F7F9FF",
+        background: "var(--brand-blue-soft)",
       }}
     >
       <div
@@ -906,7 +906,7 @@ function VoiceBundleStatusStrip({
           data-testid="voice-prefix-persistent-bundle-progress"
         >
           <div
-            className="h-full rounded-sm bg-[#0B35F1] transition-[width] duration-500"
+            className="h-full rounded-sm bg-brand-blue transition-[width] duration-500"
             style={{
               width: progressWidth,
               opacity: percent === null ? 0.72 : 1,
