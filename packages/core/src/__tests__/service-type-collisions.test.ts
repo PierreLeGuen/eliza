@@ -51,6 +51,29 @@ const serviceTypeValuesByMember = new Map(
 
 const duplicateServiceTypeAllowlist = new Map<string, AllowlistEntry>([
 	[
+		"capability-router",
+		{
+			reason:
+				"RuntimeCapabilityService is the canonical capability-router owner; legacy remote/E2B router services keep the same slot during the P0 migration until their dispatch logic folds into RuntimeCapabilityService strategies.",
+			classes: new Set([
+				"packages/core/src/services/runtime-capability-service.ts:RuntimeCapabilityService",
+				"packages/agent/src/services/e2b-capability-router.ts:E2BRemoteCapabilityRouterService",
+				"packages/agent/src/services/remote-capability-router.ts:RemoteCapabilityRouterService",
+			]),
+		},
+	],
+	[
+		"xr-session",
+		{
+			reason:
+				"Hearwear and the standalone XR plugin expose the same XR session service contract while the hardware-specific plugin split settles; they must not be enabled together.",
+			classes: new Set([
+				"plugins/plugin-hearwear/src/services/xr-session-service.ts:XRSessionService",
+				"plugins/plugin-xr/src/services/xr-session-service.ts:XRSessionService",
+			]),
+		},
+	],
+	[
 		"trajectories",
 		{
 			reason:
@@ -58,6 +81,29 @@ const duplicateServiceTypeAllowlist = new Map<string, AllowlistEntry>([
 			classes: new Set([
 				"packages/core/src/features/trajectories/TrajectoriesService.ts:TrajectoriesService",
 				"packages/agent/src/runtime/trajectory-storage.ts:DatabaseTrajectoryLogger",
+			]),
+		},
+	],
+	[
+		"capability-router",
+		{
+			reason:
+				"Capability router unification keeps the core canonical service beside legacy agent router implementations during the P0/P1 migration; runtime wiring must select one active router.",
+			classes: new Set([
+				"packages/core/src/services/runtime-capability-service.ts:RuntimeCapabilityService",
+				"packages/agent/src/services/e2b-capability-router.ts:E2BRemoteCapabilityRouterService",
+				"packages/agent/src/services/remote-capability-router.ts:RemoteCapabilityRouterService",
+			]),
+		},
+	],
+	[
+		"xr-session",
+		{
+			reason:
+				"Hearwear reuses the XR session service contract while plugin-xr remains as the standalone XR package; these plugins should not be enabled together for the same device surface.",
+			classes: new Set([
+				"plugins/plugin-hearwear/src/services/xr-session-service.ts:XRSessionService",
+				"plugins/plugin-xr/src/services/xr-session-service.ts:XRSessionService",
 			]),
 		},
 	],
