@@ -554,6 +554,10 @@ grep -q 'ELIZAOS_CLOSE_MINIMIZES_TO_TRAY.*:-1' \
     tails/config/chroot_local-includes/usr/local/bin/milady
 grep -q 'ELIZAOS_CEF_PROFILE_COMPAT.*:-1' \
     tails/config/chroot_local-includes/usr/local/bin/milady
+grep -q 'ELIZAOS_BUNDLED_SKILLS_DIR' \
+    tails/config/chroot_local-includes/usr/local/bin/milady
+grep -q '@elizaos/skills/skills' \
+    tails/config/chroot_local-includes/usr/local/bin/milady
 grep -q 'normalize_tcp_port' \
     tails/config/chroot_local-includes/usr/local/bin/milady
 grep -q 'normalize_loopback_bind' \

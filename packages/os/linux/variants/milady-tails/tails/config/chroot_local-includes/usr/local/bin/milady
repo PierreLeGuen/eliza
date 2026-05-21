@@ -82,6 +82,13 @@ export ELIZAOS_LIVE_EMBEDDING_FALLBACK="${ELIZAOS_LIVE_EMBEDDING_FALLBACK:-1}"
 export ELIZA_DISABLE_PROACTIVE_AGENT="${ELIZA_DISABLE_PROACTIVE_AGENT:-1}"
 export ELIZAOS_CLOSE_MINIMIZES_TO_TRAY="${ELIZAOS_CLOSE_MINIMIZES_TO_TRAY:-1}"
 export ELIZAOS_CEF_PROFILE_COMPAT="${ELIZAOS_CEF_PROFILE_COMPAT:-1}"
+if [ -z "${ELIZAOS_BUNDLED_SKILLS_DIR:-}" ]; then
+    bundled_skills_dir="${ELIZAOS_RUNTIME_ROOT}/Resources/app/eliza-dist/node_modules/@elizaos/skills/skills"
+    if [ -d "${bundled_skills_dir}" ]; then
+        export ELIZAOS_BUNDLED_SKILLS_DIR="${bundled_skills_dir}"
+        export BUNDLED_SKILLS_DIRS="${BUNDLED_SKILLS_DIRS:-${bundled_skills_dir}}"
+    fi
+fi
 ELIZA_API_PORT="$(normalize_tcp_port "${ELIZA_API_PORT:-31337}" 31337)"
 export ELIZA_API_PORT
 ELIZA_PORT="$(normalize_tcp_port "${ELIZA_PORT:-${ELIZA_API_PORT}}" "${ELIZA_API_PORT}")"
