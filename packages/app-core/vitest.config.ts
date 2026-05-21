@@ -361,12 +361,20 @@ export default defineConfig({
         replacement: path.join(pluginLocalInferenceSrc, "runtime", "index.ts"),
       },
       {
+        find: /^@elizaos\/plugin-local-inference\/runtime\/(.+)$/,
+        replacement: path.join(pluginLocalInferenceSrc, "runtime", "$1"),
+      },
+      {
         find: /^@elizaos\/plugin-local-inference\/routes$/,
         replacement: path.join(pluginLocalInferenceSrc, "routes", "index.ts"),
       },
       {
         find: /^@elizaos\/plugin-local-inference\/services$/,
         replacement: path.join(pluginLocalInferenceSrc, "services", "index.ts"),
+      },
+      {
+        find: /^@elizaos\/plugin-local-inference\/services\/(.+)$/,
+        replacement: path.join(pluginLocalInferenceSrc, "services", "$1"),
       },
       {
         find: /^@elizaos\/plugin-mcp$/,
