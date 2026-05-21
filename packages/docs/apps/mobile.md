@@ -89,12 +89,13 @@ Use `bun run build:android:cloud` from the repository root for a Play-store
 style release AAB thin client; `android-cloud-debug` is only for debug APK
 iteration. Use `bun run build:android:system` for the privileged AOSP APK. The
 legacy `packages/app` `build:android` script is sideload-only and embeds the
-on-device agent runtime. The cloud target strips the local agent, privileged
-default-role surfaces, staged runtime assets, native runtime plugin references,
-`ElizaAgentService`, `assets/agent`, disguised `libeliza_` native runtime
-libraries, `MANAGE_APP_OPS_MODES`, `PACKAGE_USAGE_STATS`,
-`MANAGE_VIRTUAL_MACHINE`, and other system-only permissions, then audits the
-source tree and artifact.
+on-device agent runtime. App-store/cloud builds do not run a local Bun backend;
+they connect through cloud or remote capability routes. The cloud target strips
+the local agent, privileged default-role surfaces, staged runtime assets, native
+runtime plugin references, `ElizaAgentService`, `assets/agent`, disguised
+`libeliza_` native runtime libraries, `MANAGE_APP_OPS_MODES`,
+`PACKAGE_USAGE_STATS`, `MANAGE_VIRTUAL_MACHINE`, and other system-only
+permissions, then audits the source tree and artifact.
 
 The `android-cloud` target strips `ElizaAgentService`, system-only permissions
 such as `MANAGE_APP_OPS_MODES`, `PACKAGE_USAGE_STATS`, and
