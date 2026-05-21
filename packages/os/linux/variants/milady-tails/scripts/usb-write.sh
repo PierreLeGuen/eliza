@@ -85,13 +85,14 @@ if ! printf '%s' "${file_out}" | grep -qiE "ISO 9660|boot sector|partition|disk 
     exit 2
 fi
 
-if printf '%s' "${file_out}" | grep -qi "ISO 9660"; then
-    yellow "WARNING: writing an ISO directly is for explicit override/testing only."
-    yellow "Persistent Storage may reject devices that were not created from the USB image."
-fi
 image_is_iso=0
 if printf '%s' "${file_out}" | grep -qi "ISO 9660"; then
     image_is_iso=1
+fi
+
+if [ "${image_is_iso}" = "1" ]; then
+    yellow "WARNING: writing an ISO directly is for explicit override/testing only."
+    yellow "Persistent Storage may reject devices that were not created from the USB image."
 fi
 
 if [ "${image_is_iso}" != "1" ] && ! command -v sgdisk >/dev/null 2>&1; then

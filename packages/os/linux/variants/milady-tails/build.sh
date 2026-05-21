@@ -54,6 +54,11 @@ if [ ! -d "${TAILS_SRC}/config" ]; then
     exit 1
 fi
 
+if [ "${STAGE}" = "binary" ] && [ "${ELIZAOS_SYNC_CHROOT:-1}" = "1" ]; then
+    echo "=== syncing elizaOS overlay into existing chroot ==="
+    "${HERE}/scripts/sync-runtime-to-chroot.sh"
+fi
+
 echo "=== building image ${IMAGE} ==="
 # The image bakes in only Tails' live-build fork; the Dockerfile's build
 # context needs that source available as tails-live-build/. The vendored

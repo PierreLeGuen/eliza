@@ -362,8 +362,15 @@ class ImageCreator:
             # Unmount in reverse order of setup so the chroot-visible image is
             # gone before we tear down the procfs mount used by syslinux. Track
             # successful mounts so setup failures do not leak chroot state.
+            unmount_errors = []
             for mountpoint in reversed(mounted):
-                unmount(mountpoint)
+                try:
+                    unmount(mountpoint)
+                except subprocess.CalledProcessError as err:
+                    logger.error("Failed to unmount %s: %s", mountpoint, err)
+                    unmount_errors.append(err)
+            if unmount_errors:
+                raise unmount_errors[0]
 
     def install_syslinux(self):
         logger.info("Installing bootloader")

@@ -878,6 +878,48 @@ for unit in \
 do
     grep -q '^ConditionPathExists=!/run/elizaos/persistence-maintenance$' "${unit}"
 done
+if [ "${SOURCE_ONLY}" != "1" ]; then
+    verify_materialized_file() {
+        local rel="$1"
+        local src="tails/config/chroot_local-includes/${rel}"
+        local chroot_path="tails/chroot/${rel}"
+        local squashfs="tails/binary/live/filesystem.squashfs"
+        local tmp
+
+        if [ -e "${chroot_path}" ] && ! cmp -s "${src}" "${chroot_path}"; then
+            echo "${chroot_path} is stale; run scripts/sync-runtime-to-chroot.sh before binary rebuilds." >&2
+            exit 1
+        fi
+
+        if [ -f "${squashfs}" ] && command -v unsquashfs >/dev/null 2>&1; then
+            tmp="$(mktemp)"
+            if ! unsquashfs -cat "${squashfs}" "${rel}" >"${tmp}" 2>/dev/null; then
+                rm -f "${tmp}"
+                echo "${squashfs} is missing ${rel}" >&2
+                exit 1
+            fi
+            if ! cmp -s "${src}" "${tmp}"; then
+                rm -f "${tmp}"
+                echo "${squashfs}:${rel} is stale; rebuild the binary image after syncing the chroot." >&2
+                exit 1
+            fi
+            rm -f "${tmp}"
+        fi
+    }
+
+    for rel in \
+        etc/systemd/user/elizaos-agent.service \
+        etc/systemd/user/elizaos-renderer.service \
+        etc/systemd/user/milady.service \
+        usr/lib/systemd/user/tails-create-persistent-storage.service \
+        usr/local/lib/elizaos/create-persistent-storage-session \
+        usr/local/lib/elizaos/persistence-maintenance \
+        usr/local/lib/persistent-storage/on-activated-hooks/MiladyData/20-restart-milady \
+        usr/local/lib/persistent-storage/on-deactivated-hooks/MiladyData/20-restart-milady
+    do
+        verify_materialized_file "${rel}"
+    done
+fi
 if grep -q 'systemctl --global enable elizaos-pill.service' \
     tails/config/chroot_local-hooks/52-update-systemd-units; then
     echo "Voice pill must stay installed but opt-in until the pill renderer is production-ready." >&2
@@ -1186,13 +1228,24 @@ for (const root of [
       throw new Error(`${distIndex}: required runtime plugin dist is missing`);
     }
   }
-  const googleStubPath = `${nodeModules}/@elizaos/plugin-google/index.js`;
-  const googlePackagePath = `${nodeModules}/@elizaos/plugin-google/package.json`;
-  const googlePackage = JSON.parse(fs.readFileSync(googlePackagePath, "utf8"));
-  if (googlePackage.version === "0.0.0-elizaos-live-stub") {
-    const googleStub = fs.readFileSync(googleStubPath, "utf8");
-    if (!googleStub.includes("googlePlugin")) {
-      throw new Error(`${googleStubPath}: Google connector stub is malformed`);
+  const forcedLiveStubs = new Map([
+    ["@elizaos/plugin-companion", "companion"],
+    ["@elizaos/plugin-documents", "documents"],
+    ["@elizaos/plugin-google", "google"],
+    ["@elizaos/plugin-hyperliquid-app", "hyperliquid"],
+    ["@elizaos/plugin-lifeops", "lifeops"],
+    ["@elizaos/plugin-polymarket-app", "polymarket"],
+  ]);
+  for (const [packageName, marker] of forcedLiveStubs) {
+    const stubPath = `${nodeModules}/${packageName}/index.js`;
+    const packagePath = `${nodeModules}/${packageName}/package.json`;
+    const packageJson = JSON.parse(fs.readFileSync(packagePath, "utf8"));
+    if (packageJson.version !== "0.0.0-elizaos-live-stub") {
+      throw new Error(`${packagePath}: ${packageName} must be a live-safe stub in the base USB runtime`);
+    }
+    const stub = fs.readFileSync(stubPath, "utf8");
+    if (!stub.includes(marker)) {
+      throw new Error(`${stubPath}: ${packageName} live-safe stub is malformed`);
     }
   }
 

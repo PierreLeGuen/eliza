@@ -256,6 +256,103 @@ export default plugin;
 
 const optionalStubPackages = new Map(
   Object.entries({
+    "@elizaos/app-model-tester": `
+export const modelTesterPlugin = {
+  name: "model-tester",
+  description: "Model tester routes are not bundled in elizaOS Live.",
+  routes: [],
+};
+export default modelTesterPlugin;
+`,
+    "@elizaos/plugin-companion": `
+export const appCompanionPlugin = {
+  name: "companion",
+  description: "Companion overlay placeholder for elizaOS Live. The full 3D companion bundle can be installed through app updates.",
+  actions: [],
+  providers: [],
+  services: [],
+  routes: [],
+};
+export const companionPlugin = appCompanionPlugin;
+export const registerCompanionApp = () => undefined;
+export default appCompanionPlugin;
+`,
+    "@elizaos/plugin-lifeops": `
+export const appLifeOpsPlugin = {
+  name: "lifeops",
+  description: "LifeOps placeholder for elizaOS Live. Cloud connectors and proactive workflows become available after provider setup.",
+  actions: [],
+  providers: [],
+  services: [],
+  routes: [],
+};
+export const lifeopsPlugin = {
+  name: "lifeops-routes",
+  routes: [],
+};
+export const BrowserBridgePluginService = undefined;
+export const browserBridgeProvider = undefined;
+export const detectHealthBackend = () => ({ available: false, backend: "none" });
+export const handleLifeOpsRoutes = async () => false;
+export const handleWebsiteBlockerRoutes = async () => false;
+export default appLifeOpsPlugin;
+`,
+    "@elizaos/plugin-documents": `
+export const documentsPlugin = {
+  name: "documents",
+  description: "Documents app routes are not bundled in the elizaOS Live base runtime.",
+  routes: [],
+};
+export const plugin = documentsPlugin;
+export default documentsPlugin;
+`,
+    "@elizaos/plugin-hyperliquid-app": `
+export const hyperliquidPlugin = {
+  name: "hyperliquid",
+  description: "Hyperliquid app routes are not bundled in the elizaOS Live base runtime.",
+  routes: [],
+};
+export const plugin = hyperliquidPlugin;
+export default hyperliquidPlugin;
+`,
+    "@elizaos/plugin-polymarket-app": `
+export const polymarketPlugin = {
+  name: "polymarket",
+  description: "Polymarket app routes are not bundled in the elizaOS Live base runtime.",
+  routes: [],
+};
+export const plugin = polymarketPlugin;
+export default polymarketPlugin;
+`,
+    "@elizaos/plugin-shopify-ui": `
+export const shopifyPlugin = {
+  name: "shopify",
+  routes: [],
+};
+export default shopifyPlugin;
+`,
+    "@elizaos/plugin-steward-app": `
+export const stewardPlugin = {
+  name: "steward",
+  routes: [],
+};
+export default stewardPlugin;
+`,
+    "@elizaos/plugin-training": `
+export const trainingPlugin = {
+  name: "training",
+  routes: [],
+};
+export const registerTrainingRuntimeHooks = async () => undefined;
+export default trainingPlugin;
+`,
+    "@elizaos/plugin-vincent": `
+export const vincentPlugin = {
+  name: "vincent",
+  routes: [],
+};
+export default vincentPlugin;
+`,
     "@elizaos/plugin-whatsapp": `
 const noop = () => undefined;
 const falseRoute = async () => false;
@@ -388,6 +485,15 @@ export default undefined;
   }).map(([packageName, source]) => [packageName, `${source.trimStart()}\n`]),
 );
 
+const forceLiveStubPackages = new Set([
+  "@elizaos/plugin-companion",
+  "@elizaos/plugin-documents",
+  "@elizaos/plugin-google",
+  "@elizaos/plugin-hyperliquid-app",
+  "@elizaos/plugin-lifeops",
+  "@elizaos/plugin-polymarket-app",
+]);
+
 const chromiumFlags = {
   "disable-gpu": true,
   "disable-gpu-compositing": true,
@@ -495,7 +601,11 @@ function isLiveStubPackage(packageJson) {
 
 function shouldWriteLiveFallbackPackage(packageName) {
   const packageJson = readPackageManifest(packageName);
-  return !packageJson || isLiveStubPackage(packageJson);
+  return (
+    forceLiveStubPackages.has(packageName) ||
+    !packageJson ||
+    isLiveStubPackage(packageJson)
+  );
 }
 
 function sourcePackageManifest(_packageName, packageJson) {
@@ -1007,7 +1117,10 @@ function collectPackageInventory(projectedPackages = []) {
 
 function packageStatus(packageName) {
   const packageJson = readPackageManifest(packageName);
-  const generated = !packageJson || isLiveStubPackage(packageJson);
+  const generated =
+    forceLiveStubPackages.has(packageName) ||
+    !packageJson ||
+    isLiveStubPackage(packageJson);
   return {
     packageName,
     packagePath: relativeToStage(packageManifestPath(packageName)),
