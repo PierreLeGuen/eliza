@@ -68,6 +68,7 @@ CSS_FILE = "greeter.css"
 ICON_DIR = "icons/"
 PREFERRED_WIDTH = 620
 PREFERRED_HEIGHT = 470
+MIN_VIEWPORT_HEIGHT = 360
 
 
 class GreeterMainWindow(Gtk.Window, TranslatableWindow):
@@ -158,8 +159,21 @@ class GreeterMainWindow(Gtk.Window, TranslatableWindow):
         # Add placeholder to settings ListBox
         self.listbox_settings.set_placeholder(self.label_settings_default)
 
+        # Keep the greeter usable on small or scaled VM displays. The elizaOS
+        # persistence-create controls make the natural body taller than the
+        # inherited window target, so the body needs to scroll independently
+        # from the header bar instead of letting the bottom controls clip.
+        self.body_scroller = Gtk.ScrolledWindow()
+        self.body_scroller.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        self.body_scroller.set_shadow_type(Gtk.ShadowType.NONE)
+        self.body_scroller.set_min_content_height(
+            min(Gdk.Screen.get_default().get_height(), MIN_VIEWPORT_HEIGHT),
+        )
+        self.body_scroller.add(self.box_main)
+        self.body_scroller.show()
+
         # Add children to ApplicationWindow
-        self.add(self.box_main)
+        self.add(self.body_scroller)
         self.set_titlebar(self.headerbar)
 
         # Set keyboard focus chain
